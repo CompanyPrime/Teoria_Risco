@@ -47,7 +47,14 @@ def pageTeoriaRisco():
 ##############################################################################################################################################
 #PASSO 1: IMPORT DA BASESINFORMAÇÕES ADICIONAIS PARA CÁLCULO DA TEORIA DO RISCO
 # Importar o DataFrame do formato Parquet
-     df_sinistro = pd.read_parquet('C:/Users/fabricio/OneDrive - MB CONSULTORIA EMPRESARIAL E CONTABIL LTDA/2.Projetos/TEORIA_RISCO/BD_Sinistro_Fusaro_Teoria_Risco.parquet', engine='pyarrow')
+
+     # URL do arquivo Parquet no GitHub
+     url = 'https://github.com/usuario/repo/raw/main/caminho/para/o/arquivo/BD_Sinistro_Fusaro_Teoria_Risco.parquet'
+
+     # Leitura do arquivo Parquet direto do GitHub
+     df_sinistro = pd.read_parquet(url, engine='pyarrow')
+
+     #df_sinistro = pd.read_parquet('C:/Users/fabricio/OneDrive - MB CONSULTORIA EMPRESARIAL E CONTABIL LTDA/2.Projetos/TEORIA_RISCO/BD_Sinistro_Fusaro_Teoria_Risco.parquet', engine='pyarrow')
 
 ##############################################################################################################################################
 #PASSO 2: INFORMAÇÕES ADICIONAIS PARA CÁLCULO DA TEORIA DO RISCO
