@@ -49,7 +49,7 @@ def pageTeoriaRisco():
 # Importar o DataFrame do formato Parquet
 
      # URL do arquivo Parquet no GitHub
-     url = 'https://github.com/usuario/repo/raw/main/caminho/para/o/arquivo/BD_Sinistro_Fusaro_Teoria_Risco.parquet'
+     url = 'https://github.com/CompanyPrime/Teoria_Risco/blob/main/BD_Sinistro_Fusaro_Teoria_Risco.parquet'
 
      # Leitura do arquivo Parquet direto do GitHub
      df_sinistro = pd.read_parquet(url, engine='pyarrow')
