@@ -50,7 +50,7 @@ def pageTeoriaRisco():
 
      # URL do arquivo Parquet no GitHub
      url = 'https://github.com/CompanyPrime/Teoria_Risco/blob/main/BD_Sin.parquet'
-     
+    
      # Leitura do arquivo Parquet direto do GitHub
      df_sinistro = pd.read_parquet(url, engine='pyarrow')
 
