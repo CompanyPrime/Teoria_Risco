@@ -49,7 +49,7 @@ def pageTeoriaRisco():
 
      # Leitura do arquivo Parquet direto do GitHub
      url = 'https://raw.githubusercontent.com/CompanyPrime/Teoria_Risco/feddd6a74ddbd2d7dbafe0d0349b041460ed03b6/BD_sin.csv'
-     df_sinistro = pd.read_csv(url, sep=',')
+     df_sinistro = pd.read_csv(url, sep=';')
      
 ##############################################################################################################################################
 #PASSO 2: INFORMAÇÕES ADICIONAIS PARA CÁLCULO DA TEORIA DO RISCO
