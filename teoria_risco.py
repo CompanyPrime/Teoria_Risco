@@ -14,9 +14,9 @@ def pageTeoriaRisco():
      with col01:
           # URL da imagem do site
           url_imagem = 'https://companyprime.com.br/wp-content/uploads/2018/10/logo-companyprime2.png'
-          st.image(url_imagem, width=180)
+          st.image(url_imagem, width=210)
      with col02:
-          st.markdown("""<h2 style='font-size: 50px; font-family: Arial, sans-serif; color: #4B0082;'>Cálculo Teoria do Risco</h2>""", unsafe_allow_html=True)
+          st.markdown("""<h2 style='font-size: 55px; font-family: Arial, sans-serif; color: #4B0082;'>Cálculo Teoria do Risco</h2>""", unsafe_allow_html=True)
      st.write("---") #Pular Linha
 
 ######################################################################################################################################################
@@ -48,23 +48,21 @@ def pageTeoriaRisco():
 #PASSO 1: IMPORT DA BASESINFORMAÇÕES ADICIONAIS PARA CÁLCULO DA TEORIA DO RISCO
 # Importar o DataFrame do formato Parquet
 
-     # URL do arquivo Parquet no GitHub
-     url = 'https://github.com/CompanyPrime/Teoria_Risco/blob/main/BD_Sinistro_Fusaro_Teoria_Risco.parquet'
-
      # Leitura do arquivo Parquet direto do GitHub
-     df_sinistro = pd.read_parquet(url, engine='pyarrow')
+     #url = 'https://github.com/CompanyPrime/Teoria_Risco/blob/main/BD_Sin.parquet'
+     #df_sinistro = pd.read_parquet(url, engine='pyarrow')
 
-     #df_sinistro = pd.read_parquet('C:/Users/fabricio/OneDrive - MB CONSULTORIA EMPRESARIAL E CONTABIL LTDA/2.Projetos/TEORIA_RISCO/BD_Sinistro_Fusaro_Teoria_Risco.parquet', engine='pyarrow')
+     df_sinistro = pd.read_parquet('C:/Users/fabricio/OneDrive - MB CONSULTORIA EMPRESARIAL E CONTABIL LTDA/2.Projetos/TEORIA_RISCO/BD_sin.parquet', engine='pyarrow')
 
 ##############################################################################################################################################
 #PASSO 2: INFORMAÇÕES ADICIONAIS PARA CÁLCULO DA TEORIA DO RISCO
      subheader_html = f"""
-                         <div style='font-size:{titulo_tam_graf}; font-family:{titulo_font}; font-weight:bold;'> Informações Complementares </div>
+                         <div style='font-size:{titulo_tam_graf}; font-family:{titulo_font}; font-weight:bold;'> Selecione as Informações para o Cálculo </div>
                          <hr style='border:{linha_espessura} solid {linha_cor}; margin-top: 0; margin-bottom: 10px' /> """
                          #<div style='color:{cor_subtitulo}; font-size:{subtitulo_tam}; font-family:{subtitulo_font}; margin-bottom: 0;'> Informações complementares para o cálculo. </div>
      st.markdown(subheader_html, unsafe_allow_html=True)
 
-
+     st.write("") #Pular Linha
 #*********************************************************************************************************************************************
 #2.1:  SELEÇÃO DO RAMO AGRUPADO CONFORME SES SUSEP(FIP)
      col1, col2, col3=st.columns([0.3, 0.3, 0.3])
@@ -146,7 +144,6 @@ def pageTeoriaRisco():
                                       format="%.2f"    # Formato numérico sem casas decimais
                                        )
           
-
           if df_ISE > 0:
                col11, col12=st.columns([0.3, 0.3])
                with col11:
@@ -155,14 +152,16 @@ def pageTeoriaRisco():
                     st.write(f"ISE Digitado: {valor_formatado}")
 
                with col12:
-                    input_ISE = pd.DataFrame({"chave" : [1], "ISE_IMPORTANCIA_SEGURADA_EXPOSTA": [df_ISE]})
+                    # Verifica se o DataFrame input_NER existe antes do merge
+                      if 'input_NER' in locals() and 'chave' in input_NER.columns and 'NER_NUMERO_EXPOSICAO_RISCO' in input_NER.columns:
+                         # Criação do DataFrame para o input_ISE
+                         input_ISE = pd.DataFrame({"chave": [1], "ISE_IMPORTANCIA_SEGURADA_EXPOSTA": [df_ISE]})
+                         ISMEDIA = pd.merge(input_ISE, input_NER, on='chave', how='left')     
+                         ISMEDIA['IS_MEDIA'] = (ISMEDIA['ISE_IMPORTANCIA_SEGURADA_EXPOSTA'] / ISMEDIA['NER_NUMERO_EXPOSICAO_RISCO'])
 
-                    ISMEDIA = pd.merge(input_ISE, input_NER, on='chave', how='left')     
-                    ISMEDIA['IS_MEDIA'] = (ISMEDIA['ISE_IMPORTANCIA_SEGURADA_EXPOSTA'] / ISMEDIA['NER_NUMERO_EXPOSICAO_RISCO'])
-
-                    is_media_valor = ISMEDIA['IS_MEDIA'].iloc[0]
-                    is_formatado = f"{is_media_valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-                    st.write(f"IS Média: {is_formatado}")
+                         is_media_valor = ISMEDIA['IS_MEDIA'].iloc[0]
+                         is_formatado = f"{is_media_valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+                         st.write(f"IS Média: {is_formatado}")
                
      st.write("---") #Pular Linha
 ##############################################################################################################################################
@@ -189,95 +188,112 @@ def pageTeoriaRisco():
      df_agrupado = df_sinistro_select.groupby(['GRANOME', 'Cobertura']).agg({'NSO_NUMERO_SIN_OCO'   : 'sum',
                                                                              'MSO_MONTANTE_SIN_OCO'  : 'sum',
                                                                              'MSO_MONTANTE_SIN_OCO_QUADRADO' :'sum'}).reset_index()
-
      # Calcula os totais gerais
      total_geral = {'GRANOME'                       : 'TOTAL GERAL',
                     'Cobertura'                     : '',  # Deixe vazio se não há um valor específico para essa coluna
                     'NSO_NUMERO_SIN_OCO'            : df_agrupado['NSO_NUMERO_SIN_OCO'].sum(),
                     'MSO_MONTANTE_SIN_OCO'          : df_agrupado['MSO_MONTANTE_SIN_OCO'].sum(),
-                    'MSO_MONTANTE_SIN_OCO_QUADRADO' : df_agrupado['MSO_MONTANTE_SIN_OCO_QUADRADO'].sum()
-}
+                    'MSO_MONTANTE_SIN_OCO_QUADRADO' : df_agrupado['MSO_MONTANTE_SIN_OCO_QUADRADO'].sum()}
+     
      # Adiciona a linha "Total Geral" ao DataFrame
      df_agrupado = pd.concat([df_agrupado, pd.DataFrame([total_geral])], ignore_index=True)
-
 
      #CRIA A CHAVE PARA O MERGE
      df_agrupado['chave']=1
      df_agrupado = pd.merge(df_agrupado, coef_significancia_filtrado, on='chave', how='left')
-     df_agrupado = pd.merge(df_agrupado, input_NER, on='chave', how='left')
-     df_agrupado = pd.merge(df_agrupado, input_ISE, on='chave', how='left')
-
-     #CRIA TRC-TAXA RISCO COLETIVO
      
-     df_agrupado['TRC_TAXA_RISCO_COLETIVO'] = df_agrupado['MSO_MONTANTE_SIN_OCO'] / df_agrupado['ISE_IMPORTANCIA_SEGURADA_EXPOSTA']*100
+     #Verifica se o usuário digitou ou forneceu um valor para input_NER
+     if 'input_NER' in locals() and not input_NER.empty:  # Verifica se input_NER existe e não está vazio
+          df_agrupado = pd.merge(df_agrupado, input_NER, on='chave', how='left') # Realiza o merge somente se input_NER for preenchido
 
-     #CRIA TP-TAXA PURA
-     df_agrupado['TP_TAXA_PURA'] = ((df_agrupado['MSO_MONTANTE_SIN_OCO'] + df_agrupado['escore']*(df_agrupado['MSO_MONTANTE_SIN_OCO_QUADRADO']**0.5))/df_agrupado['ISE_IMPORTANCIA_SEGURADA_EXPOSTA'])*100
+     if 'input_ISE' in locals() and not input_ISE.empty:  # Verifica se input_ISE existe e não está vazio
+          df_agrupado = pd.merge(df_agrupado, input_ISE, on='chave', how='left') # Realiza o merge somente se input_ISE for preenchido
 
 
-     #CRIA CARREGAMENTO ESTATISTICO DE SEGURANÇA OU VR(TP-TAXA_PURA / TRC-TAXA_RISCO_COLETIVO)
-     df_agrupado['TRC_TP_CARREGAMENTO_ESTATISTICO'] = ((((df_agrupado['TP_TAXA_PURA'] / df_agrupado['TRC_TAXA_RISCO_COLETIVO']))-1)*100)
+          #CRIA TRC-TAXA RISCO COLETIVO
+          df_agrupado['TRC_TAXA_RISCO_COLETIVO'] = df_agrupado['MSO_MONTANTE_SIN_OCO'] / df_agrupado['ISE_IMPORTANCIA_SEGURADA_EXPOSTA']*100
+
+          #CRIA TP-TAXA PURA
+          df_agrupado['TP_TAXA_PURA'] = ((df_agrupado['MSO_MONTANTE_SIN_OCO'] + df_agrupado['escore']*(df_agrupado['MSO_MONTANTE_SIN_OCO_QUADRADO']**0.5))/df_agrupado['ISE_IMPORTANCIA_SEGURADA_EXPOSTA'])*100
+
+
+          #CRIA CARREGAMENTO ESTATISTICO DE SEGURANÇA OU VR(TP-TAXA_PURA / TRC-TAXA_RISCO_COLETIVO)
+          df_agrupado['TRC_TP_CARREGAMENTO_ESTATISTICO'] = ((((df_agrupado['TP_TAXA_PURA'] / df_agrupado['TRC_TAXA_RISCO_COLETIVO']))-1)*100)
           
-     df_agrupado = df_agrupado.rename(columns={'GRANOME'                          : 'Ramo Agrupado',
-                                               #'noramo'                           : 'Ramo',
-                                               'Cobertura'                        : 'Cobertura',       
-                                               'NER_NUMERO_EXPOSICAO_RISCO'       : 'Expostos Risco',
-                                               'ISE_IMPORTANCIA_SEGURADA_EXPOSTA' : 'IS Exposta',
-                                               'NSO_NUMERO_SIN_OCO'               : 'Qtde Sin. Ocorrido',
-                                               'MSO_MONTANTE_SIN_OCO'             : 'Valor Sin. Ocorrido',
-                                               'MSO_MONTANTE_SIN_OCO_QUADRADO'    : 'MSO^2 - Montante Sin. Oco',
-                                               'TRC_TAXA_RISCO_COLETIVO'          : 'TR-Taxa Risco',
-                                               'TP_TAXA_PURA'                     : 'TP-Taxa Pura',
-                                               'TRC_TP_CARREGAMENTO_ESTATISTICO'  : 'TP/TR - Final'})
+          df_agrupado = df_agrupado.rename(columns={'GRANOME'                          : 'Ramo Agrupado',
+                                                   #'noramo'                           : 'Ramo',
+                                                    'Cobertura'                        : 'Cobertura',       
+                                                    'NER_NUMERO_EXPOSICAO_RISCO'       : 'Expostos Risco',
+                                                    'ISE_IMPORTANCIA_SEGURADA_EXPOSTA' : 'IS Exposta',
+                                                    'NSO_NUMERO_SIN_OCO'               : 'Qtde Sin. Ocorrido',
+                                                    'MSO_MONTANTE_SIN_OCO'             : 'Valor Sin. Ocorrido',
+                                                    'MSO_MONTANTE_SIN_OCO_QUADRADO'    : 'MSO^2 - Montante Sin. Oco',
+                                                    'TRC_TAXA_RISCO_COLETIVO'          : 'TR-Taxa Risco',
+                                                    'TP_TAXA_PURA'                     : 'TP-Taxa Pura',
+                                                    'TRC_TP_CARREGAMENTO_ESTATISTICO'  : 'TP/TR - Final'})
 
-     df_TR_saida = df_agrupado[['Ramo Agrupado',
-                                #'Ramo',
-                                'Cobertura',
-                                'Expostos Risco',
-                                'IS Exposta',
-                                'Qtde Sin. Ocorrido',
-                                'Valor Sin. Ocorrido',
-                                #'MSO^2 - Montante Sin. Oco',
-                                'TR-Taxa Risco',
-                                'TP-Taxa Pura',
-                                'TP/TR - Final']]
+          df_TR_saida = df_agrupado[['Ramo Agrupado',
+                                    #'Ramo',
+                                     'Cobertura',
+                                     'Expostos Risco',
+                                     'IS Exposta',
+                                     'Qtde Sin. Ocorrido',
+                                     'Valor Sin. Ocorrido',
+                                     #'MSO^2 - Montante Sin. Oco',
+                                     'TR-Taxa Risco',
+                                     'TP-Taxa Pura',
+                                     'TP/TR - Final']]
+          
+          # Aplica a formatação de % nos campos abaixo
+          campos_percentuais = ['TR-Taxa Risco', 'TP-Taxa Pura', 'TP/TR - Final']
+          for campo in campos_percentuais:
+               df_TR_saida[campo] = df_TR_saida[campo].apply(lambda x: f"{x:.4f}".replace('.', ',') + '%')
+
+          st.write(df_TR_saida)
      
-     # Aplica a formatação de % nos campos abaixo
-     campos_percentuais = ['TR-Taxa Risco', 'TP-Taxa Pura', 'TP/TR - Final']
-     for campo in campos_percentuais:
-          df_TR_saida[campo] = df_TR_saida[campo].apply(lambda x: f"{x:.4f}".replace('.', ',') + '%')
-
-     st.write(df_TR_saida)
-
 #*********************************************************************************************************************************************
 #4: EXPORTA A BASE DE TAXA PARA O EXCEL
-     def to_excel(df_TR_saida):
-          # Adiciona a coluna 'data_export' com a data e hora atual
-          df_TR_saida['Data Export'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-          
-          # Usando BytesIO para criar o arquivo Excel em memória
-          output = io.BytesIO()
-          with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-               df_TR_saida.to_excel(writer, index=False, sheet_name='Resultado')
-          output.seek(0)
-          return output.read()
+          def to_excel(df_TR_saida):
+               # Adiciona a coluna 'data_export' com a data e hora atual
+               df_TR_saida['Data Export'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+               
+               # Usando BytesIO para criar o arquivo Excel em memória
+               output = io.BytesIO()
+               with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+                    df_TR_saida.to_excel(writer, index=False, sheet_name='Resultado')
+               output.seek(0)
+               return output.read()
 
-     # Adicionar o botão de exportação para Excel
-     ramo_agrupado = df_TR_saida['Ramo Agrupado'].unique()[0]
+          # Adicionar o botão de exportação para Excel
+          ramo_agrupado = df_TR_saida['Ramo Agrupado'].unique()[0]
 
-     st.download_button(label="Exportar Resultado",
-                        data=to_excel(df_TR_saida),  # Data é o DataFrame convertido para Excel
-                        file_name=f"Teoria do Risco Por Cobertura - {ramo_agrupado}.xlsx",  # Nome do arquivo exportado
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",)  # Tipo MIME para Excel
+          st.download_button(label="Exportar Resultado",
+                         data=to_excel(df_TR_saida),  # Data é o DataFrame convertido para Excel
+                         file_name=f"Teoria do Risco Por Cobertura - {ramo_agrupado}.xlsx",  # Nome do arquivo exportado
+                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",)  # Tipo MIME para Excel
  
-#Critérios utilizados
-# regra  df_sinistro = df_sinistro[df_sinistro['Tipo_Mov'].isin(['PAGOS', 'AVISADOS'])]
-# df_sinistro_select['MSO_MONTANTE_SIN_OCO'] = (df_sinistro_select['INDENIZACAO'] + df_sinistro_select['HONORARIO'] + df_sinistro_select['DESPESA'])
-#Ramo com a classificação SUSEP
+          st.write("---") #Pular Linha
 
+#*********************************************************************************************************************************************
+#5: CRITÉRIOS UTILZIADOS NO CÁLCULO
+          subheader_html = f"""
+                    <div style='font-size:{titulo_tam_graf}; font-family:{titulo_font}; font-weight:bold;'> Critérios Utilzado:</div>
+                    <hr style='border:{linha_espessura} solid {linha_cor}; margin-top: 0; margin-bottom: 10px' /> 
+                    
+                    <div style='color:black; font-size:15px; font-family:{subtitulo_font}; margin-bottom: 5px;'>
+                    <span style='font-weight:bold; font-style:italic;'>Tipo de Movimento:</span> 
+                    <span style='font-size:14px; font-weight:normal; font-style:normal;'>Pagos e Avidados.</span>
+                    </div>
 
+                    <div style='color:black; font-size:15px; font-family:{subtitulo_font}; margin-bottom: 5px;'>
+                    <span style='font-weight:bold; font-style:italic;'>Valor de Sinistro:</span> 
+                    <span style='font-size:14px; font-weight:normal; font-style:normal;'>Soma dos valores Indenizado + Honorários + Despesas.</span>
+                    </div>
 
-     
-     
-
-     
+                    <div style='color:black; font-size:15px; font-family:{subtitulo_font}; margin-bottom: 5px;'>
+                    <span style='font-weight:bold; font-style:italic;'>Classificação do Ramo (Agrupado e Aberto):</span> 
+                    <span style='font-size:14px; font-weight:normal; font-style:normal;'>Fonte SES SUSEP.</span>
+                    </div>
+                    
+                    """
+          st.markdown(subheader_html, unsafe_allow_html=True)
