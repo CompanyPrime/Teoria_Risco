@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import io
 from datetime import datetime
-import requests
 
 
 #######################################################################################################################################
@@ -50,8 +49,12 @@ def pageTeoriaRisco():
 # Importar o DataFrame do formato Parquet
 
      # Leitura do arquivo Parquet direto do GitHub
-     url = 'https://github.com/CompanyPrime/Teoria_Risco/blob/main/BD_Sin.parquet'
-     df_sinistro = pd.read_parquet(url, engine='pyarrow')
+     #url = 'https://github.com/CompanyPrime/Teoria_Risco/blob/main/BD_Sin.parquet'
+     #url = 'https://github.com/CompanyPrime/Teoria_Risco/blame/a56881024aefc3e59a852ac62f0405c965d783a7/BD_sin.parquet'
+     #df_sinistro = pd.read_parquet(url, engine='pyarrow')
+
+     #df_sinistro = pd.read_parquet('C:/Users/fabricio/OneDrive - MB CONSULTORIA EMPRESARIAL E CONTABIL LTDA/2.Projetos/TEORIA_RISCO/BD_sin.parquet', engine='pyarrow')
+     df_sinistro = pd.read_csv('C:/Users/fabricio/OneDrive - MB CONSULTORIA EMPRESARIAL E CONTABIL LTDA/2.Projetos/TEORIA_RISCO/BD_sin.csv', sep=';')
 
 ##############################################################################################################################################
 #PASSO 2: INFORMAÇÕES ADICIONAIS PARA CÁLCULO DA TEORIA DO RISCO
