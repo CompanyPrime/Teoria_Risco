@@ -4,7 +4,6 @@ import io
 from datetime import datetime
 import requests
 
-
 #######################################################################################################################################
 # Definir a configuração da página (deve ser a primeira função Streamlit no script)
 def pageTeoriaRisco():
