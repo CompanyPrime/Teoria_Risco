@@ -48,9 +48,11 @@ def pageTeoriaRisco():
 #PASSO 1: IMPORT DA BASESINFORMAÇÕES ADICIONAIS PARA CÁLCULO DA TEORIA DO RISCO
 # Importar o DataFrame do formato Parquet
 
-     #url = 'https://raw.githubusercontent.com/CompanyPrime/Teoria_Risco/main/BD_Sin.parquet'
-     url = 'https://github.com/CompanyPrime/Teoria_Risco/blob/main/BD_sin.parquet'
-     df_sinistro = pd.read_parquet(url, engine='pyarrow')
+     # Leitura do arquivo Parquet direto do GitHub
+     #url = 'https://github.com/CompanyPrime/Teoria_Risco/blob/main/BD_Sin.parquet'
+     #df_sinistro = pd.read_parquet(url, engine='pyarrow')
+
+     df_sinistro = pd.read_parquet('C:/Users/fabricio/OneDrive - MB CONSULTORIA EMPRESARIAL E CONTABIL LTDA/2.Projetos/TEORIA_RISCO/BD_sin.parquet', engine='pyarrow')
 
 ##############################################################################################################################################
 #PASSO 2: INFORMAÇÕES ADICIONAIS PARA CÁLCULO DA TEORIA DO RISCO
@@ -275,7 +277,7 @@ def pageTeoriaRisco():
 #*********************************************************************************************************************************************
 #5: CRITÉRIOS UTILZIADOS NO CÁLCULO
           subheader_html = f"""
-                    <div style='font-size:{titulo_tam_graf}; font-family:{titulo_font}; font-weight:bold;'> Critérios Utilzado:</div>
+                    <div style='font-size:{titulo_tam_graf}; font-family:{titulo_font}; font-weight:bold;'> Critérios Utilizados</div>
                     <hr style='border:{linha_espessura} solid {linha_cor}; margin-top: 0; margin-bottom: 10px' /> 
                     
                     <div style='color:black; font-size:15px; font-family:{subtitulo_font}; margin-bottom: 5px;'>
