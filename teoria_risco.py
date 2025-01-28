@@ -49,10 +49,10 @@ def pageTeoriaRisco():
 # Importar o DataFrame do formato Parquet
 
      # Leitura do arquivo Parquet direto do GitHub
-     #url = 'https://github.com/CompanyPrime/Teoria_Risco/blob/main/BD_Sin.parquet'
-     #df_sinistro = pd.read_parquet(url, engine='pyarrow')
+     url = 'https://github.com/CompanyPrime/Teoria_Risco/blob/main/BD_Sin.parquet'
+     df_sinistro = pd.read_parquet(url, engine='pyarrow')
 
-     df_sinistro = pd.read_parquet('C:/Users/fabricio/OneDrive - MB CONSULTORIA EMPRESARIAL E CONTABIL LTDA/2.Projetos/TEORIA_RISCO/BD_sin.parquet', engine='pyarrow')
+     #df_sinistro = pd.read_parquet('C:/Users/fabricio/OneDrive - MB CONSULTORIA EMPRESARIAL E CONTABIL LTDA/2.Projetos/TEORIA_RISCO/BD_sin.parquet', engine='pyarrow')
 
 ##############################################################################################################################################
 #PASSO 2: INFORMAÇÕES ADICIONAIS PARA CÁLCULO DA TEORIA DO RISCO
